@@ -6,6 +6,13 @@ A simple tool to evaluate Pascal VOC mAP and COCO AP (standard) for object detec
 
 ## Guide
 
+0. Install requirements on Ubuntu 16.04/18.04:
+
+```
+# apt install python3-opencv
+# pip install -r requirements.txt
+```
+
 1. Prepare dataset annotation file and class names file.
 
     Data annotation file format:
@@ -108,3 +115,9 @@ optional arguments:
   --iou_threshold IOU_THRESHOLD
                         IOU threshold for PascalVOC mAP, default=0.5
 ```
+
+It support following metrics:
+
+1. Pascal VOC mAP: will draw rec/pre curve for each class and AP/mAP result chart in "result" dir with default 0.5 IOU or specified IOU
+
+2. MS COCO AP. This is a simplified COCO AP evaluation (comparing with [pycocotools](https://github.com/cocodataset/cocoapi/tree/master/PythonAPI/pycocotools)) without any additional COCO annotation. Will draw overall AP chart and AP on different scale (small, medium, large) as COCO standard.
