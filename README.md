@@ -93,34 +93,34 @@ A simple tool to evaluate Pascal VOC mAP and COCO AP (standard) for object detec
 
 3. Run evaluation
 
-```
-# python object_detection_eval.py -h
-usage: object_detection_eval.py [-h] --annotation_file ANNOTATION_FILE
-                                --result_file RESULT_FILE --classes_path
-                                CLASSES_PATH [--eval_type EVAL_TYPE]
-                                [--iou_threshold IOU_THRESHOLD]
+    ```
+    # python object_detection_eval.py -h
+    usage: object_detection_eval.py [-h] --annotation_file ANNOTATION_FILE
+                                    --result_file RESULT_FILE --classes_path
+                                    CLASSES_PATH [--eval_type EVAL_TYPE]
+                                    [--iou_threshold IOU_THRESHOLD]
 
-evaluate Object Detection model with test dataset
+    evaluate Object Detection model with test dataset
 
-optional arguments:
-  -h, --help            show this help message and exit
-  --annotation_file ANNOTATION_FILE
-                        dataset annotation txt file
-  --result_file RESULT_FILE
-                        detection result txt file
-  --classes_path CLASSES_PATH
-                        path to class definitions
-  --eval_type EVAL_TYPE
-                        evaluation type (VOC/COCO), default=VOC
-  --iou_threshold IOU_THRESHOLD
-                        IOU threshold for PascalVOC mAP, default=0.5
-```
+    optional arguments:
+      -h, --help            show this help message and exit
+      --annotation_file ANNOTATION_FILE
+                            dataset annotation txt file
+      --result_file RESULT_FILE
+                            detection result txt file
+      --classes_path CLASSES_PATH
+                            path to class definitions
+      --eval_type EVAL_TYPE
+                            evaluation type (VOC/COCO), default=VOC
+      --iou_threshold IOU_THRESHOLD
+                            IOU threshold for PascalVOC mAP, default=0.5
+    ```
 
-It support following metrics:
+    It support following metrics:
 
-1. Pascal VOC mAP: will draw rec/pre curve for each class and AP/mAP result chart in "result" dir with default 0.5 IOU or specified IOU
+    1. Pascal VOC mAP: will draw rec/pre curve for each class and AP/mAP result chart in "result" dir with default 0.5 IOU or specified IOU
 
-2. MS COCO AP. This is a simplified COCO AP evaluation (comparing with [pycocotools](https://github.com/cocodataset/cocoapi/tree/master/PythonAPI/pycocotools)) without any additional COCO annotation. Will draw overall AP chart and AP on different scale (small, medium, large) as COCO standard.
+    2. MS COCO AP. This is a simplified COCO AP evaluation (comparing with [pycocotools](https://github.com/cocodataset/cocoapi/tree/master/PythonAPI/pycocotools)) without any additional COCO annotation. Will draw overall AP chart and AP on different scale (small, medium, large) as COCO standard.
 
 
 4. Annotation convert
