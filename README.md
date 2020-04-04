@@ -118,13 +118,16 @@ optional arguments:
 
 It support following metrics:
 
-    1. Pascal VOC mAP: will draw rec/pre curve for each class and AP/mAP result chart in "result" dir with default 0.5 IOU or specified IOU
+1. Pascal VOC mAP: will draw rec/pre curve for each class and AP/mAP result chart in "result" dir with default 0.5 IOU or specified IOU
 
-    2. MS COCO AP. This is a simplified COCO AP evaluation (comparing with [pycocotools](https://github.com/cocodataset/cocoapi/tree/master/PythonAPI/pycocotools)) without any additional COCO annotation. Will draw overall AP chart and AP on different scale (small, medium, large) as COCO standard.
+2. MS COCO AP. This is a simplified COCO AP evaluation (comparing with [pycocotools](https://github.com/cocodataset/cocoapi/tree/master/PythonAPI/pycocotools)) without any additional COCO annotation. Will draw overall AP chart and AP on different scale (small, medium, large) as COCO standard.
 
 
 4. Annotation convert
+
     You can use [convert_annotation.py](https://github.com/david8862/Object-Detection-Evaluation/blob/master/tools/convert_annotation.py) to convert the single txt dataset annotation file or detection result file to following annotation directories:
+
+    ```
     <root path>/
     ├── ground_truth
     │   ├── 000001.txt
@@ -136,26 +139,28 @@ It support following metrics:
         ├── 000002.txt
         ├── 000003.txt
         └── ...
+    ```
 
-       ```
-       # cd tools && python convert_annotation.py -h
-       usage: convert_annotation.py [-h] [--output_path OUTPUT_PATH]
-                                    [--classes_path CLASSES_PATH]
-                                    (--ground_truth_file GROUND_TRUTH_FILE | --detection_result_file DETECTION_RESULT_FILE)
-
-       convert annotations to third-party format
-
-       optional arguments:
-         -h, --help            show this help message and exit
-         --output_path OUTPUT_PATH
-                               Output root path for the converted annotations,
-                               default=./output
-         --classes_path CLASSES_PATH
-                               path to class definitions, default
-                               ../configs/voc_classes.txt
-         --ground_truth_file GROUND_TRUTH_FILE
-                               converted ground truth annotation file
-         --detection_result_file DETECTION_RESULT_FILE
-                               converted detection result file
-       ```
     This kind of annotation can be used by other popular PascalVOC mAP evaluation tools, like [mAP](https://github.com/Cartucho/mAP) and [Object-Detection-Metrics](https://github.com/rafaelpadilla/Object-Detection-Metrics)
+
+    ```
+    # cd tools && python convert_annotation.py -h
+    usage: convert_annotation.py [-h] [--output_path OUTPUT_PATH]
+                                 [--classes_path CLASSES_PATH]
+                                 (--ground_truth_file GROUND_TRUTH_FILE | --detection_result_file DETECTION_RESULT_FILE)
+
+    convert annotations to third-party format
+
+    optional arguments:
+      -h, --help            show this help message and exit
+      --output_path OUTPUT_PATH
+                            Output root path for the converted annotations,
+                            default=./output
+      --classes_path CLASSES_PATH
+                            path to class definitions, default
+                            ../configs/voc_classes.txt
+      --ground_truth_file GROUND_TRUTH_FILE
+                            converted ground truth annotation file
+      --detection_result_file DETECTION_RESULT_FILE
+                            converted detection result file
+    ```
