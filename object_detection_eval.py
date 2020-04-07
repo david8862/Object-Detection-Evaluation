@@ -11,10 +11,6 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import rgb_to_hsv, hsv_to_rgb
 
 
-def touchdir(path):
-    if not os.path.exists(path):
-        os.makedirs(path)
-
 def get_classes(classes_path):
     '''loads the classes'''
     with open(classes_path) as f:
@@ -359,8 +355,8 @@ def draw_rec_prec(rec, prec, mrec, mprec, class_name, ap):
     #plt.show()
     # save the plot
     rec_prec_plot_path = os.path.join('result','classes')
-    touchdir(rec_prec_plot_path)
-    fig.savefig(os.path.join(rec_prec_plot_path, class_name + ".jpg"))
+    os.makedirs(rec_prec_plot_path, exist_ok=True)
+    fig.savefig(os.path.join(rec_prec_plot_path, class_name + ".png"))
     plt.cla() # clear axes for next plot
 
 
@@ -710,7 +706,7 @@ def compute_AP_COCO(annotation_records, gt_classes_records, pred_classes_records
         '''
          Draw MS COCO AP plot
         '''
-        touchdir('result')
+        os.makedirs('result', exist_ok=True)
         window_title = "MSCOCO AP on different IOU"
         plot_title = "COCO AP = {0:.2f}%".format(AP)
         x_label = "Average Precision"
@@ -742,7 +738,7 @@ def compute_AP_COCO_Scale(annotation_records, scale_gt_classes_records, pred_cla
     '''
      Draw Scale AP plot
     '''
-    touchdir('result')
+    os.makedirs('result', exist_ok=True)
     window_title = "MSCOCO AP on different scale"
     plot_title = "scale mAP = {0:.2f}%".format(scale_mAP)
     x_label = "Average Precision"
