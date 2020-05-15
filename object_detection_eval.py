@@ -636,8 +636,8 @@ def compute_mAP_PascalVOC(annotation_records, gt_classes_records, pred_classes_r
         APs[class_name] = ap
         count_true_positives[class_name] = true_positive_count
 
-    #sort AP result by class
-    APs = OrderedDict(sorted(APs.items(), key=operator.itemgetter(0)))
+    #sort AP result by value, in descending order
+    APs = OrderedDict(sorted(APs.items(), key=operator.itemgetter(1), reverse=True))
 
     #get mAP percentage value
     #mAP = np.mean(list(APs.values()))*100
@@ -708,8 +708,8 @@ def compute_AP_COCO(annotation_records, gt_classes_records, pred_classes_records
 
     pbar.close()
 
-    #sort AP result by key
-    APs = OrderedDict(sorted(APs.items(), key=operator.itemgetter(0)))
+    #sort AP result by value, in descending order
+    APs = OrderedDict(sorted(APs.items(), key=operator.itemgetter(1), reverse=True))
 
     #get overall AP percentage value
     AP = np.mean(list(APs.values()))
