@@ -28,8 +28,8 @@ A simple tool to evaluate Pascal VOC mAP and COCO AP (standard) for object detec
     1. For VOC style dataset, you can use [voc_annotation.py](https://github.com/david8862/Object-Detection-Evaluation/blob/master/tools/voc_annotation.py) to convert original dataset to txt annotation file:
        ```
        # cd tools && python voc_annotation.py -h
-       usage: voc_annotation.py [-h] [--dataset_path DATASET_PATH]
-                                [--output_path OUTPUT_PATH]
+       usage: voc_annotation.py [-h] [--dataset_path DATASET_PATH] [--year YEAR]
+                                [--set SET] [--output_path OUTPUT_PATH]
                                 [--classes_path CLASSES_PATH] [--include_difficult]
                                 [--include_no_obj]
 
@@ -39,6 +39,10 @@ A simple tool to evaluate Pascal VOC mAP and COCO AP (standard) for object detec
          -h, --help            show this help message and exit
          --dataset_path DATASET_PATH
                                path to PascalVOC dataset, default is ../VOCdevkit
+         --year YEAR           subset path of year (2007/2012), default will cover
+                               both
+         --set SET             convert data set, default will cover train, val and
+                               test
          --output_path OUTPUT_PATH
                                output path for generated annotation txt files,
                                default is ./
