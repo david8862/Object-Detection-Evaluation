@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import xml.etree.ElementTree as ET
-import numpy as np
 import os, argparse
-from os import getcwd
+import numpy as np
+import xml.etree.ElementTree as ET
+from collections import OrderedDict
 
 sets=[('2007', 'train'), ('2007', 'val'), ('2007', 'test'), ('2012', 'train'), ('2012', 'val')]
 classes = ["aeroplane", "bicycle", "bird", "boat", "bottle", "bus", "car", "cat", "chair", "cow", "diningtable", "dog", "horse", "motorbike", "person", "pottedplant", "sheep", "sofa", "train", "tvmonitor"]
@@ -67,7 +67,9 @@ def get_classes(classes_path):
 
 
 parser = argparse.ArgumentParser(description='convert PascalVOC dataset annotation to txt annotation file')
-parser.add_argument('--dataset_path', type=str, help='path to PascalVOC dataset, default is ../VOCdevkit', default=getcwd()+'/../VOCdevkit')
+parser.add_argument('--dataset_path', type=str, help='path to PascalVOC dataset, default is ../VOCdevkit', default=os.getcwd()+'/../VOCdevkit')
+parser.add_argument('--year', type=str, help='subset path of year (2007/2012), default will cover both', default=None)
+parser.add_argument('--set', type=str, help='convert data set, default will cover train, val and test', default=None)
 parser.add_argument('--output_path', type=str,  help='output path for generated annotation txt files, default is ./', default='./')
 parser.add_argument('--classes_path', type=str, required=False, help='path to class definitions')
 parser.add_argument('--include_difficult', action="store_true", help='to include difficult object', default=False)
@@ -81,20 +83,33 @@ if args.classes_path:
 # get real path for dataset
 dataset_realpath = os.path.realpath(args.dataset_path)
 
+# get specific sets to convert
+if args.year is not None:
+    sets = [item for item in sets if item[0] == args.year]
+if args.set is not None:
+    sets = [item for item in sets if item[1] == args.set]
+
 for year, image_set in sets:
     # count class item number in each set
-    class_count = {itm: 0 for itm in classes}
+    class_count = OrderedDict([(item, 0) for item in classes])
 
     image_ids = open('%s/VOC%s/ImageSets/Main/%s.txt'%(dataset_realpath, year, image_set)).read().strip().split()
     list_file = open('%s/%s_%s.txt'%(args.output_path, year, image_set), 'w')
     for image_id in image_ids:
+        file_string = '%s/VOC%s/JPEGImages/%s.jpg'%(dataset_realpath, year, image_id)
+        # check if the image file exists
+        if not os.path.exists(file_string):
+            file_string = '%s/VOC%s/JPEGImages/%s.jpeg'%(dataset_realpath, year, image_id)
+        if not os.path.exists(file_string):
+            raise ValueError('image file not exists')
+
         if has_object(dataset_realpath, year, image_id, args.include_difficult):
-            list_file.write('%s/VOC%s/JPEGImages/%s.jpg'%(dataset_realpath, year, image_id))
+            list_file.write(file_string)
             convert_annotation(dataset_realpath, year, image_id, list_file, args.include_difficult)
             list_file.write('\n')
         elif args.include_no_obj:
             # include no object image. just write file path
-            list_file.write('%s/VOC%s/JPEGImages/%s.jpg'%(dataset_realpath, year, image_id))
+            list_file.write(file_string)
             list_file.write('\n')
     list_file.close()
     # print out item number statistic
