@@ -956,8 +956,8 @@ def main():
         help='path to class definitions')
 
     parser.add_argument(
-        '--eval_type', type=str,
-        help='evaluation type (VOC/COCO), default=VOC', default='VOC')
+        '--eval_type', type=str, choices=['VOC', 'COCO'],
+        help='evaluation type (VOC/COCO), default=%(default)s', default='VOC')
 
     parser.add_argument(
         '--iou_threshold', type=float,

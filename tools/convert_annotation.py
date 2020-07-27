@@ -65,8 +65,8 @@ def convert_annotation(annotation_file, classes_path, output_path, ground_truth)
 
 def main():
     parser = argparse.ArgumentParser(description='convert annotations to third-party format')
-    parser.add_argument('--output_path',required=False, type=str, help='Output root path for the converted annotations, default=./output', default=os.path.join(os.path.dirname(__file__), 'output'))
-    parser.add_argument('--classes_path',required=False, type=str, help='path to class definitions, default ../configs/voc_classes.txt', default='../configs/voc_classes.txt')
+    parser.add_argument('--output_path',required=False, type=str, help='Output root path for the converted annotations, default=%(default)s', default=os.path.join(os.path.dirname(__file__), 'output'))
+    parser.add_argument('--classes_path',required=False, type=str, help='path to class definitions, default=%(default)s', default='../configs/voc_classes.txt')
 
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument('--ground_truth_file', type=str, default=None, help="converted ground truth annotation file")

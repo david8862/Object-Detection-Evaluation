@@ -3,16 +3,18 @@
 import os, argparse
 import json
 import numpy as np
+from tqdm import tqdm
 from collections import defaultdict, OrderedDict
 
-sets=[('instances_train2017', 'train2017'), ('instances_val2017', 'val2017')]
+#sets=[('instances_train2017', 'train2017'), ('instances_val2017', 'val2017')]
+sets=[('instances_val2017', 'val2017')]
 
 class_count = {}
 
 parser = argparse.ArgumentParser(description='convert COCO dataset annotation to txt annotation file')
-parser.add_argument('--dataset_path', type=str, required=False, help='path to MSCOCO dataset, default is ../mscoco2017', default=os.getcwd()+'/../mscoco2017')
-parser.add_argument('--output_path', type=str, required=False,  help='output path for generated annotation txt files, default is ./', default='./')
-parser.add_argument('--classes_path', type=str, required=False, help='path to class definitions, default is ../configs/coco_classes.txt', default=os.getcwd()+'/../configs/coco_classes.txt')
+parser.add_argument('--dataset_path', type=str, required=False, help='path to MSCOCO dataset, default=%(default)s', default=os.getcwd()+'/../mscoco2017')
+parser.add_argument('--output_path', type=str, required=False,  help='output path for generated annotation txt files, default=%(default)s', default='./')
+parser.add_argument('--classes_path', type=str, required=False, help='path to class definitions, default=%(default)s', default=os.getcwd()+'/../configs/coco_classes.txt')
 parser.add_argument('--include_no_obj', action="store_true", help='to include no object image', default=False)
 parser.add_argument('--customize_coco', default=False, action="store_true", help='It is a user customize coco dataset. Will not follow standard coco class label')
 args = parser.parse_args()
@@ -50,11 +52,31 @@ def convert_coco_category(category_id):
     return category_id
 
 
+def category_id_to_real_id(category_id):
+  """
+  NOTE: coco has 80 classes, but the category_id ranges from 1 to 90
+  """
+  category_id_to_real_id = \
+    {1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9, 10: 10,
+     11: 11, 13: 12, 14: 13, 15: 14, 16: 15, 17: 16, 18: 17, 19: 18, 20: 19, 21: 20,
+     22: 21, 23: 22, 24: 23, 25: 24, 27: 25, 28: 26, 31: 27, 32: 28, 33: 29, 34: 30,
+     35: 31, 36: 32, 37: 33, 38: 34, 39: 35, 40: 36, 41: 37, 42: 38, 43: 39, 44: 40,
+     46: 41, 47: 42, 48: 43, 49: 44, 50: 45, 51: 46, 52: 47, 53: 48, 54: 49, 55: 50,
+     56: 51, 57: 52, 58: 53, 59: 54, 60: 55, 61: 56, 62: 57, 63: 58, 64: 59, 65: 60,
+     67: 61, 70: 62, 72: 63, 73: 64, 74: 65, 75: 66, 76: 67, 77: 68, 78: 69, 79: 70,
+     80: 71, 81: 72, 82: 73, 84: 74, 85: 75, 86: 76, 87: 77, 88: 78, 89: 79, 90: 80}
+  return cat_id_to_real_id[category_id]
+
+
 # update class names
 classes = get_classes(args.classes_path)
 
 # get real path for dataset
 dataset_realpath = os.path.realpath(args.dataset_path)
+
+# create output path
+os.makedirs(args.output_path, exist_ok=True)
+
 
 for dataset, datatype in sets:
     image_annotation_dict = defaultdict(list)
@@ -94,6 +116,7 @@ for dataset, datatype in sets:
             image_file = '%s/%s/%012d.jpg' % (dataset_realpath, datatype, image_id)
             image_annotation_dict[image_file] = []
 
+    pbar = tqdm(total=len(annotations), desc='Parsing %s'%(datatype))
     for annotation in annotations:
         # annotation format:
         # {
@@ -118,9 +141,12 @@ for dataset, datatype in sets:
         # count object class for statistic
         class_name = classes[category_id]
         class_count[class_name] = class_count[class_name] + 1
+        pbar.update(1)
+    pbar.close()
 
     # save converting result to our annotation file
     annotation_file = open('%s/%s.txt'%(args.output_path, datatype), 'w')
+    pbar = tqdm(total=len(image_annotation_dict), desc='Saving %s'%(datatype))
     for image_file in image_annotation_dict.keys():
         annotation_file.write(image_file)
         box_infos = image_annotation_dict[image_file]
@@ -137,6 +163,9 @@ for dataset, datatype in sets:
                 x_min, y_min, x_max, y_max, int(category_id))
             annotation_file.write(box_annotation)
         annotation_file.write('\n')
+        pbar.update(1)
+
+    pbar.close()
     annotation_file.close()
     # print out item number statistic
     print('\nDone for %s/%s.txt. classes number statistic'%(args.output_path, datatype))
