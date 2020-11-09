@@ -22,15 +22,25 @@ https://github.com/Cartucho/mAP
 https://github.com/rafaelpadilla/Object-Detection-Metrics
 '''
 import os, argparse
+import numpy as np
 from tqdm import tqdm
+from collections import OrderedDict
 
-def convert_annotation(annotation_file, classes_path, output_path, ground_truth):
-    # load classes
-    class_file = open(classes_path, 'r')
-    classes = class_file.readlines()
 
+def get_classes(classes_path):
+    '''loads the classes'''
+    with open(classes_path) as f:
+        class_names = f.readlines()
+    class_names = [c.strip() for c in class_names]
+    return class_names
+
+
+def convert_annotation(annotation_file, classes, output_path, ground_truth):
     # create output path
     os.makedirs(output_path, exist_ok=True)
+
+    # count class item number in each set
+    class_count = OrderedDict([(item, 0) for item in classes])
 
     # load annotation and write to separate files
     with open(annotation_file, 'r') as f:
@@ -49,18 +59,30 @@ def convert_annotation(annotation_file, classes_path, output_path, ground_truth)
             if ground_truth:
                 # Here we are dealing with ground-truth annotations
                 # <class_name> <left> <top> <right> <bottom> [<difficult>]
-                # todo: handle difficulty
+                # TODO: handle difficult
                 x_min, y_min, x_max, y_max, class_id = list(map(int, bbox.split(',')))
+                class_name = classes[int(class_id)].strip()
                 out_box = '{} {} {} {} {}'.format(
-                    classes[int(class_id)].strip(), x_min, y_min, x_max, y_max)
+                    class_name, x_min, y_min, x_max, y_max)
+                class_count[class_name] = class_count[class_name] + 1
             else:
                 # Here we are dealing with detection-results annotations
                 # <class_name> <confidence> <left> <top> <right> <bottom>
                 x_min, y_min, x_max, y_max, class_id, score = list(map(float, bbox.split(',')))
+                class_name = classes[int(class_id)].strip()
                 out_box = '{} {} {} {} {} {}'.format(
-                    classes[int(class_id)].strip(), score, int(x_min), int(y_min), int(x_max), int(y_max))
+                    class_name, score, int(x_min), int(y_min), int(x_max), int(y_max))
+                class_count[class_name] = class_count[class_name] + 1
             output_file.write(out_box + "\n")
     pbar.close()
+
+    # print out item number statistic
+    print('\nDone for %s. classes number statistic'%(annotation_file))
+    print('Image number: %d'%(len(annotation_lines)))
+    print('Object class number:')
+    for (class_name, number) in class_count.items():
+        print('%s: %d' % (class_name, number))
+    print('total object number:', np.sum(list(class_count.values())))
 
 
 def main():
@@ -74,11 +96,14 @@ def main():
 
     args = parser.parse_args()
 
+    # load classes
+    classes = get_classes(args.classes_path)
+
     # specify annotation_file and output_path
     annotation_file = args.ground_truth_file if args.ground_truth_file else args.detection_result_file
     output_path = os.path.join(args.output_path, 'ground_truth') if args.ground_truth_file else os.path.join(args.output_path, 'detection_result')
     # a trick: using args.ground_truth_file as flag to check if we're converting a ground truth annotation
-    convert_annotation(annotation_file, args.classes_path, output_path, args.ground_truth_file)
+    convert_annotation(annotation_file, classes, output_path, args.ground_truth_file)
 
 
 if __name__ == "__main__":
