@@ -22,19 +22,26 @@ def convert_annotation(dataset_path, year, image_id, list_file, include_difficul
             difficult = '0'
         else:
             difficult = difficult.text
-        cls = obj.find('name').text
-        if cls not in classes:
+        class_name = obj.find('name').text
+        if class_name not in classes:
             continue
         if not include_difficult and int(difficult)==1:
             continue
-        cls_id = classes.index(cls)
-        xmlbox = obj.find('bndbox')
-        b = (int(xmlbox.find('xmin').text), int(xmlbox.find('ymin').text), int(xmlbox.find('xmax').text), int(xmlbox.find('ymax').text))
-        list_file.write(" " + ",".join([str(a) for a in b]) + ',' + str(cls_id))
-        class_count[cls] = class_count[cls] + 1
+        class_id = classes.index(class_name)
+
+        # parse box coordinate to (xmin,ymin,xmax,ymax) format
+        xml_box = obj.find('bndbox')
+        box = (int(xml_box.find('xmin').text), int(xml_box.find('ymin').text), int(xml_box.find('xmax').text), int(xml_box.find('ymax').text))
+        # write box info to txt
+        list_file.write(" " + ",".join([str(item) for item in box]) + ',' + str(class_id))
+        class_count[class_name] = class_count[class_name] + 1
 
 
 def has_object(dataset_path, year, image_id, include_difficult):
+    '''
+    check if an image annotation has valid object bbox info,
+    return a boolean result
+    '''
     try:
         in_file = open('%s/VOC%s/Annotations/%s.xml'%(dataset_path, year, image_id), encoding='utf-8')
     except:
@@ -50,12 +57,12 @@ def has_object(dataset_path, year, image_id, include_difficult):
             difficult = '0'
         else:
             difficult = difficult.text
-        cls = obj.find('name').text
-        if cls not in classes:
+        class_name = obj.find('name').text
+        if class_name not in classes:
             continue
         if not include_difficult and int(difficult)==1:
             continue
-        count = count +1
+        count = count + 1
     return count != 0
 
 
@@ -121,7 +128,7 @@ for year, image_set in sets:
     pbar.close()
     list_file.close()
     # print out item number statistic
-    print('\nDone for %s_%s.txt. classes number statistic'%(year, image_set))
+    print('\nDone for VOC%s %s. classes number statistic'%(year, image_set))
     print('Image number: %d'%(len(image_ids)))
     print('Object class number:')
     for (class_name, number) in class_count.items():
