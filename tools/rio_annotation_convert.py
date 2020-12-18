@@ -18,7 +18,7 @@ def get_classes(classes_path):
     return class_names
 
 
-def convert_rio_annotation(annotation_path, classes, output_path, ground_truth, include_difficult):
+def convert_rio_annotation(annotation_path, classes, image_suffix, output_path, ground_truth, include_difficult):
 
     # get real path for dataset
     annotation_realpath = os.path.realpath(annotation_path)
@@ -38,7 +38,7 @@ def convert_rio_annotation(annotation_path, classes, output_path, ground_truth, 
         pbar.update(1)
 
         # fake an image name and write as 1st part
-        image_name = annotation_file.replace('.txt', '.jpg')
+        image_name = annotation_file.replace('.txt', '.'+image_suffix)
         output_file.write(image_name)
 
         annotation_lines = open(os.path.join(annotation_realpath, annotation_file), "r")
@@ -112,6 +112,7 @@ def main():
     group.add_argument('--detection_result_path', type=str, default=None, help="path for rio detection result files")
 
     parser.add_argument('--classes_path',required=False, type=str, help='path to class definitions, default=%(default)s', default='../configs/voc_classes.txt')
+    parser.add_argument('--image_suffix', type=str, choices=['jpg', 'jpeg', 'png'], help='detect image suffix (jpg/jpeg/png), default=%(default)s', default='jpg')
     parser.add_argument('--output_path',required=True, type=str, help='path to output single txt file')
     parser.add_argument('--include_difficult', action="store_true", help='to include difficult object', default=False)
 
@@ -124,7 +125,7 @@ def main():
     annotation_path = args.ground_truth_path if args.ground_truth_path else args.detection_result_path
 
     # a trick: using args.ground_truth_path as flag to check if we're converting a ground truth annotation
-    convert_rio_annotation(annotation_path, classes, args.output_path, args.ground_truth_path, args.include_difficult)
+    convert_rio_annotation(annotation_path, classes, args.image_suffix, args.output_path, args.ground_truth_path, args.include_difficult)
 
 
 if __name__ == "__main__":
