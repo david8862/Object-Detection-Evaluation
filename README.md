@@ -101,7 +101,9 @@ A simple tool to evaluate Pascal VOC mAP and COCO AP (standard) for object detec
     # python object_detection_eval.py -h
     usage: object_detection_eval.py [-h] --annotation_file ANNOTATION_FILE
                                     --result_file RESULT_FILE --classes_path
-                                    CLASSES_PATH [--eval_type {VOC,COCO}]
+                                    CLASSES_PATH
+                                    [--classes_filter_path CLASSES_FILTER_PATH]
+                                    [--eval_type {VOC,COCO}]
                                     [--iou_threshold IOU_THRESHOLD]
 
     evaluate Object Detection model with test dataset
@@ -114,6 +116,8 @@ A simple tool to evaluate Pascal VOC mAP and COCO AP (standard) for object detec
                             detection result txt file
       --classes_path CLASSES_PATH
                             path to class definitions
+      --classes_filter_path CLASSES_FILTER_PATH
+                            path to class filter definitions, default=None
       --eval_type {VOC,COCO}
                             evaluation type (VOC/COCO), default=VOC
       --iou_threshold IOU_THRESHOLD
