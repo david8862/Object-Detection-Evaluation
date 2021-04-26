@@ -130,6 +130,12 @@ A simple tool to evaluate Pascal VOC mAP and COCO AP (standard) for object detec
 
     2. MS COCO AP: will draw overall AP chart and AP on different scale (small, medium, large) as COCO standard.
 
+    Following is sample result on PascalVOC dataset:
+    <p align="center">
+      <img src="assets/mAP.jpg">
+      <img src="assets/COCO_AP.jpg">
+    </p>
+
 
 4. Annotation convert
 
