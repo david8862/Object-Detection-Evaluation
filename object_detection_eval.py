@@ -275,7 +275,7 @@ def get_rec_prec(true_positive, false_positive, gt_records):
 
 def draw_rec_prec(rec, prec, mrec, mprec, class_name, ap):
     """
-     Draw plot
+    Draw plot
     """
     plt.plot(rec, prec, '-o')
     # add a new penultimate point to the list (mrec[-2], 0.0)
@@ -312,7 +312,10 @@ import bokeh.io as bokeh_io
 import bokeh.plotting as bokeh_plotting
 def generate_rec_prec_html(mrec, mprec, scores, class_name, ap):
     """
-     generate dynamic P-R curve HTML page for each class
+    Generate dynamic P-R curve HTML page for each class
+
+    Note: for convenince, we support double click on the HTML page
+          with mouse to capture the rec/prec/score value on curve
     """
     # bypass invalid class
     if len(mrec) == 0 or len(mprec) == 0 or len(scores) == 0:
@@ -343,8 +346,21 @@ def generate_rec_prec_html(mrec, mprec, scores, class_name, ap):
     plt.axis.axis_line_color = None
 
     # draw curve data
-    plt.line(x='rec', y='prec', line_width=2, color='#ebbd5b', source=source)
+    plt.line(x='rec', y='prec', line_width=2, color='#ebbd5b', source=source, legend_label='double click to copy P&R')
     plt.add_tools(bokeh.models.HoverTool(
+      callback=bokeh.models.CustomJS(
+        code="""var data=cb_data.renderer.data_source.data;
+         var line_id=cb_data.index.line_indices[0];
+         var x=cb_data.geometry.x;
+         if(data['rec'][line_id+1]-x > x-data['rec'][line_id])
+         {
+            window.spr_text=data['score'][line_id]+'\t'+data['prec'][line_id]+'\t'+data['rec'][line_id];
+         }
+         else
+         {
+            window.spr_text=data['score'][line_id+1]+'\t'+data['prec'][line_id+1]+'\t'+data['rec'][line_id+1];
+         }
+         """),
       tooltips=[
         ( 'score', '@score{0.0000 a}'),
         ( 'Prec', '@prec'),
@@ -356,6 +372,7 @@ def generate_rec_prec_html(mrec, mprec, scores, class_name, ap):
       },
       mode='vline'
     ))
+    plt.js_on_event(bokeh.events.DoubleTap, bokeh.models.CustomJS(code="""navigator.clipboard.writeText(window.spr_text);"""))
     bokeh_io.save(plt)
     return
 
