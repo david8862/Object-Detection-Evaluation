@@ -4,4 +4,4 @@ opencv-python
 matplotlib
 tqdm
 pillow
-bokeh==2.0.0
+bokeh==3.8.2
